@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.dropdownmenuexample"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.dropdownmenuexample"
@@ -68,5 +68,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // MenuAnchorType
-    implementation("androidx.compose.material3:material3:1.3.0")
+    implementation("androidx.compose.material3:material3:1.3.1")
 }

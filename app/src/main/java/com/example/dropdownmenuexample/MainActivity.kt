@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenuItem
@@ -32,30 +33,36 @@ class MainActivity : ComponentActivity() {
         setContent {
             DropdownMenuExampleTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val coffeeDrinks by remember {
-                        mutableStateOf(
-                            arrayOf(
-                                "Americano",
-                                "Cappuccino",
-                                "Espresso",
-                                "Latte",
-                                "Mocha"
-                            )
-                        )
-                    }
-                    var selectedText by remember { mutableStateOf(coffeeDrinks[0]) }
-                    Column(modifier = Modifier.padding(innerPadding)) {
-                        Text(text = "Which coffee")
-                        MyDropdownMenu(
-                            items = coffeeDrinks,
-                            selectedItem = selectedText,
-                            onItemSelected = { selectedText = it }
-                        )
-                        Text(text = "You selected: $selectedText")
-                    }
+                    MainContent(innerPadding)
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun MainContent(innerPadding: PaddingValues) {
+    val coffeeDrinks by remember {
+        mutableStateOf(
+            listOf(
+                "Americano",
+                "Cappuccino",
+                "Espresso",
+                "Latte",
+                "Mocha"
+            )
+        )
+    }
+    // Initialize selectedText with the first item from the list
+    var selectedText by remember { mutableStateOf(coffeeDrinks[0]) }
+    Column(modifier = Modifier.padding(innerPadding)) {
+        Text(text = "Which coffee")
+        MyDropdownMenu(
+            items = coffeeDrinks,
+            selectedItem = selectedText,
+            onItemSelected = { selectedText = it }
+        )
+        Text(text = "You selected: $selectedText")
     }
 }
 
@@ -64,7 +71,7 @@ class MainActivity : ComponentActivity() {
 // https://alexzh.com/jetpack-compose-dropdownmenu/
 // https://gist.github.com/tpoisson/15835d1df5a9f10f0baea838cea1dc1e
 fun MyDropdownMenu(
-    items: Array<String>,
+    items: List<String>,
     selectedItem: String,
     onItemSelected: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -72,19 +79,20 @@ fun MyDropdownMenu(
     var expanded by remember { mutableStateOf(false) }
 
     Box(modifier = modifier) {
-        // TODO ExposedDropdownMenuBox https://composables.com/material3/exposeddropdownmenubox
+        // ExposedDropdownMenuBox https://composables.com/material3/exposeddropdownmenubox
         ExposedDropdownMenuBox(
             expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
+            onExpandedChange = { expanded = it }
         ) {
             TextField(
                 value = selectedItem,
-                onValueChange = { onItemSelected(it) },
+                onValueChange = {
+                    /* No need to handle changes here as it's read-only */
+                },
                 readOnly = true, // MenuAnchor, editable, change to false
                 singleLine = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                // gradle:
-                // implementation 'androidx.compose.material3:material3:1.0.0-alpha06'
+                // gradle: implementation 'androidx.compose.material3:material3:1.0.0-alpha06'
                 modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
                 colors = ExposedDropdownMenuDefaults.textFieldColors()
             )
@@ -112,7 +120,7 @@ fun MyDropdownMenu(
 @Composable
 fun DropdownMenuPreview() {
     DropdownMenuExampleTheme {
-        val items = arrayOf(
+        val items = listOf(
             "Americano",
             "Cappuccino",
             "Espresso",
